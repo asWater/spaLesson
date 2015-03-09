@@ -1,20 +1,32 @@
 <!DOCTYPE html>
+
+<!--
+	"spa.html"
+	spa browser document
+-->
+
 <html>
 	<<head>
 		<meta charset="utf-8">
 		<title>SPA Starter</title>
 
-		<!-- Style Sheets -->
+		<!-- 3rd Party's Style Sheet -->
+
+		<!-- Own Style Sheets -->
 		<link rel="stylesheet" href="css/spa.css" type="text/css"/>
+		<link rel="stylesheet" href="css/spa.chat.css" type="text/css"/>
 		<link rel="stylesheet" href="css/spa.shell.css" type="text/css"/>
 
-		<!-- 3rd party Javascripts -->
+		<!-- 3rd Party's Javascripts -->
 		<script src="js/jq/jquery-1.11.2.js"></script>
 		<script src="js/jq/jquery.uriAnchor.js"></script>
 
-		<!-- Main Javascripts -->
+		<!-- Own Javascripts -->
 		<script src="js/spa.js"></script>
+		<script src="js/spa.util.js"></script>
+		<script src="js/spa.model.js"></script>
 		<Script src="js/spa.shell.js"></script>
+		<script src="js/spa.chat.js"></script>
 		<script>
 			$(function () { spa.initModule( $('#spa') ); });
 		</script>

@@ -262,9 +262,9 @@ spa.shell = (function ()
 		// Adjustment of chat component in the case of change.
 		if ( (! anchor_map_previous) || (_s_chat_previous !== _s_chat_proposed) )
 		{
-			s_chant_proposed = anchor_map_proposed.chat;
+			s_chat_proposed = anchor_map_proposed.chat;
 
-			switch ( s_chant_proposed )
+			switch ( s_chat_proposed )
 			{
 				case 'open' : 
 					toggleChat( true );
@@ -316,6 +316,10 @@ spa.shell = (function ()
 		{
 			schema_map: configMap.anchor_schema_map
 		});
+
+		// Configure & Initialize function module.
+		spa.chat.configModule( {} );
+		spa.chat.initModule( jqueryMap.$chat );
 
 		// URI anchor change evnet handling.
 		// This process should be done after all other function modules were propery set, 
