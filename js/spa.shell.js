@@ -35,7 +35,10 @@ spa.shell = (function ()
 			+ '</div>'
 			+ '<div class="spa-shell-foot"></div>'
 			//+ '<div class="spa-shell-chat"></div>'
-			+ '<div class="spa-shell-modal"></div>'
+			+ '<div class="spa-shell-modal"></div>',
+
+			resize_interval : 200
+
 			/*
 			,
 			chat_extend_time     : 1000,
@@ -49,15 +52,16 @@ spa.shell = (function ()
 
 		stateMap = 
 		{ 
-			//$container        : null,
-			anchor_map        : {}
+			$container        : undefined,
+			anchor_map        : {},
+			resize_idto       : undefined
 			//is_chat_retracted : true
 		},
 		
 		jqueryMap = {},  // Cache jQuery collection to jqueryMap.
 
 		copyAnchorMap, setJqueryMap, //toggleChat,
-		changeAnchorPart, onHashchange,
+		changeAnchorPart, onHashchange, onResize,
 		//onClickChat, 
 		setChatAnchor, initModule;
 	// Module Scope Variant <<< End
@@ -323,6 +327,25 @@ spa.shell = (function ()
 		return changeAnchorPart({ chat : position_type });
 	};
 
+
+	// <Event Handler>: "onResize".
+	onResize = function ()
+	{
+		if ( stateMap.resize_idto )
+		{
+			return true;
+		}
+
+		spa.chat.handleResize();
+		
+		stateMap.resize_idto = setTimeout( function ()
+			{ 
+				stateMap.resize_idto = undefined; 
+			}, configMap.resize_interval );
+
+		return true;
+	};
+
 	/*
 	// [Event Handler]: "onClickChat"
 	onClickChat = function ( event )
@@ -390,6 +413,7 @@ spa.shell = (function ()
 		// otherwise it is not ready to hanlde trigger event.
 		// Trigger event is used to guarantee that the anchor is loaded.
 		$(window)
+			.bind( 'resize', onResize )
 			.bind( 'hashchange', onHashchange )
 			.trigger( 'hashchage' );
 
