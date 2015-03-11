@@ -22,6 +22,7 @@ spa.shell = (function ()
 			{
 				chat : { opened : true, closed : true }
 			},
+
 			main_html : String()
 			+ '<div class="spa-shell-head">'
 				+ '<div class="spa-shell-head-logo"></div>'
@@ -34,13 +35,16 @@ spa.shell = (function ()
 			+ '</div>'
 			+ '<div class="spa-shell-foot"></div>'
 			//+ '<div class="spa-shell-chat"></div>'
-			+ '<div class="spa-shell-modal"></div>',
+			+ '<div class="spa-shell-modal"></div>'
+			/*
+			,
 			chat_extend_time     : 1000,
 			chat_retract_time    : 300,
 			chat_extend_height   : 450,
 			chat_retract_height  : 15,
 			chat_extended_title  : 'Click to retract',
 			chat_retracted_title : 'Click to extend'
+			*/
 		},
 
 		stateMap = 
@@ -80,9 +84,9 @@ spa.shell = (function ()
 		var $container = stateMap.$container;
 		
 		jqueryMap = 
-		{ 
+		{
 			$container : $container
-			//$chat : $container.find( '.spa-shell-chat' ) 
+			//$chat : $container.find( '.spa-shell-chat' )
 		};
 	};
 	
@@ -164,7 +168,7 @@ spa.shell = (function ()
 	// [Return value]: BOOLEAN
 	// 	- true: URI anchor part was updated.
 	// 	- false: Failed to change URI anchor part.
-	// [Behaiver]: 
+	// [Behavior]: 
 	// 	> Save current anchor to "stateMap.anchor_map".
 	// 	> Modify the key value by using "arg_map".
 	// 	> Control independent & dependent values of encording.
@@ -174,7 +178,7 @@ spa.shell = (function ()
 	{
 		var
 			anchor_map_revise = copyAnchorMap(),
-			bool_return = true, 
+			bool_return = true,
 			key_name, key_name_dep;
 
 		// Change to anchor map
@@ -235,7 +239,7 @@ spa.shell = (function ()
 	// 	- event: jQuery event object
 	// [Setting]: None.
 	// [Return value]: FALSE.
-	// [Behaiver]: 
+	// [Behavior]: 
 	// 	> Analyze URI anchor elements.
 	// 	> Compare provided application status with the current status.
 	// 	> Adjust application only if provided status is differ from the current one, and anchor schema is allowed.
@@ -243,7 +247,7 @@ spa.shell = (function ()
 	{
 		var
 			anchor_map_proposed,
-			_s_chat_previous, _s_chat_proposed, 
+			_s_chat_previous, _s_chat_proposed,
 			s_chat_proposed,
 			is_ok = true,
 			anchor_map_previous = copyAnchorMap();
@@ -272,13 +276,13 @@ spa.shell = (function ()
 
 			switch ( s_chat_proposed )
 			{
-				case 'opened' : 
+				case 'opened' :
 					is_ok = spa.chat.setSliderPosition( 'opened' );
 					break;
-				case 'closed' : 
+				case 'closed' :
 					is_ok = spa.chat.setSliderPosition( 'closed' );
 					break;
-				default : 
+				default :
 					spa.chat.setSliderPosition( 'closed' );
 					delete anchor_map_proposed.chat;
 					$.uriAnchor.setAnchor( anchor_map_proposed, null, true );
@@ -308,7 +312,7 @@ spa.shell = (function ()
 	// [Objective]: Change anchor's chat component.
 	// [Parameters]: 
 	// 	- position_type > [closed] or [opened].
-	// [Behaiver]: If possible, change URI anchor parameter "chat" as requested.
+	// [Behavior]: If possible, change URI anchor parameter "chat" as requested.
 	// [Return value]: 
 	// 	- true > Requested anchor part is updated.
 	// 	- false > Requested anchor part was not updated.
@@ -316,7 +320,7 @@ spa.shell = (function ()
 	// 
 	setChatAnchor = function ( position_type )
 	{
-		return changeAnchorPart({ chat: position_type });
+		return changeAnchorPart({ chat : position_type });
 	};
 
 	/*
@@ -346,7 +350,7 @@ spa.shell = (function ()
 	// [Parameters]: 
 	// 	- $append_target > (e.g. $('#app_div_id') );
 	// 	  jQuery collection which indicates 1 DOM container.
-	// [Behaiver]: 
+	// [Behavior]: 
 	// 	- Add UI shell to $container, and configure function module, then initialize it.
 	// 	  Shell is responsible for managing URI anchor and Cookie, and issues on the overall browser.
 	// [Return value]: none
@@ -372,17 +376,17 @@ spa.shell = (function ()
 		});
 
 		// Configure & Initialize function module.
-		spa.chat.configModule( 
+		spa.chat.configModule(
 			{
-				set_chat_anchor : setChatAnchor
-				//chat_model : spa.model.chat,
-				//people_model : spa.model.people
+				set_chat_anchor : setChatAnchor,
+				chat_model : spa.model.chat,
+				people_model : spa.model.people
 			} );
-		
+
 		spa.chat.initModule( jqueryMap.$container );
 
 		// URI anchor change evnet handling.
-		// This process should be done after all other function modules were propery set, 
+		// This process should be done after all other function modules were propery set,
 		// otherwise it is not ready to hanlde trigger event.
 		// Trigger event is used to guarantee that the anchor is loaded.
 		$(window)
@@ -390,7 +394,7 @@ spa.shell = (function ()
 			.trigger( 'hashchage' );
 
 	};
-	
+
 	// Public Methods <<< End
 	//===================================
 

@@ -144,7 +144,7 @@ spa.chat = (function ()
 	// 	- position_type > enum('closed', 'opened', or 'hidden')
 	// 	- callback > Callback of the last option of animation.
 	// 		This callback recieves jQuery collection which means slider div as a first parameter.
-	// [Behaiver]:
+	// [Behavior]:
 	// 	- This method moves slider as requested.
 	// 	- If the required position is same with the current one, it returns TRUE without any behaivers.
 	// [Return Value]: 
@@ -197,7 +197,7 @@ spa.chat = (function ()
 		jqueryMap.$slider.animate( { height : height_px }, animate_time, function ()
 		{
 			jqueryMap.$toggle.prop( 'title', slider_title );
-			jqueryMap.$toggle_text( toggle_text );
+			jqueryMap.$toggle.text( toggle_text );
 			stateMap.position_type = position_type;
 
 			if ( callback )
@@ -250,7 +250,7 @@ spa.chat = (function ()
 	// 	- people_model > People model object provides the method which manage people held by the model
 	// 	- slider_* > Configuration. All option scalar. Perfect list is to be referred to "mapConfig.settable_map".
 	// 				 (e.g.) "slider_open_em" means height by em when it's opened.
-	// [Behaiver]: 
+	// [Behavior]: 
 	// 	- Update the internal configuration data structure(configMap). It does not do anything others.  
 	// [Return value]: true.
 	// [Exception]: If this receives unacceptable or imperfect parameters, throws JavaScript error object and stack trace.
@@ -273,7 +273,7 @@ spa.chat = (function ()
 	// [Parameters]: 
 	// 	- $append_target (e.g.) $('#div_id')
 	// 	  > jQuery collection means 1 DOM container.
-	// [Behaiver]:
+	// [Behavior]:
 	//  - Add the chat slider to instructed container and fill HTML contents.
 	//  - Initialize elements, events and handler, provides the user with chatroom interface.
 	// [Return value]: true when success, false when it fails.

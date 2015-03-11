@@ -50,7 +50,6 @@ spa.model = (function ()
 
 
 	// ### Return Public Methods ###
-	return 
-	{}; 
+	return {};
 
 }());
