@@ -220,7 +220,7 @@ spa.chat = (function ()
 	{
 		var set_chat_anchor = configMap.set_chat_anchor;
 
-		if ( settable_map.position_type === 'opened' )
+		if ( stateMap.position_type === 'opened' )
 		{
 			set_chat_anchor( 'closed' );
 		}
