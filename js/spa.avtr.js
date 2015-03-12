@@ -1,5 +1,5 @@
 /*
-<xxx>.js
+spa.avtr.js
  */
 
 /*jslint
@@ -11,7 +11,7 @@
 */
 /*global $, spa */
 
-template = (function ()
+spa.avtr = (function ()
 {
 	//===================================
 	// Module Scope Variant >>> Start 

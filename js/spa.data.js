@@ -1,5 +1,5 @@
 /*
-<xxx>.js
+spa.data.js
  */
 
 /*jslint
@@ -11,7 +11,7 @@
 */
 /*global $, spa */
 
-template = (function ()
+spa.data = (function ()
 {
 	//===================================
 	// Module Scope Variant >>> Start 
