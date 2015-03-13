@@ -13,15 +13,18 @@ spa.js
 
 var spa = (function ()
 {
+	'use strict';
+
 	var initModule = function ( $container )
 	{
 		//$container.html('<h1 style="display:inline-block; margin:25px;">' + 'hello world!!' + '</h1>');
+		spa.model.initModule();
 		spa.shell.initModule( $container );
 	};
 
 	//[This is the module pattern of Javascript]
 	// Methods only published to the user of "spa" are returned.
-	// i.e. <Published method name>: <Method named defined in this function> 
+	// i.e. <Published method name>: <Method named defined in this function>
 	// e.g. If it said "return { init: initModule }" here, the user will use this method by "spa.init($container)".
 	return { initModule: initModule };
 }());
