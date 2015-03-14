@@ -25,11 +25,14 @@ spa.model = (function ()
 			anon_user : null,
 			cid_serial : 0,
 			people_cid_map : {},
-			people_db : TAFFY()
+			people_db : TAFFY(),
+			is_connected : false
 		},
 		isFakeData = true,
 
-		personProto, makeCid, clearPeopleDb, completeLogin, makePerson, removePerson, people, initModule;
+		personProto, makeCid, clearPeopleDb, completeLogin, 
+		makePerson, people, chat, //removePerson, 
+		initModule;
 
 	// Module Scope Variant <<< End
 	//===================================
@@ -121,6 +124,8 @@ spa.model = (function ()
 		stateMap.user.css_map = user_map.css_map;
 		stateMap.people_cid_map[ user_map._id ] = stateMap.user;
 
+		chat.join();
+
 		// When we add chat, we shold join here
 		$.gevent.publish( 'spa-login', [ stateMap.user ] );
 	};
@@ -157,6 +162,7 @@ spa.model = (function ()
 		return person;
 	};
 
+/*
 	removePerson = function ( person )
 	{
 		if ( ! person )
@@ -179,7 +185,7 @@ spa.model = (function ()
 
 		return true;
 	};
-
+*/
 
 	// Utility Methods <<< End
 	//===================================
@@ -229,21 +235,32 @@ spa.model = (function ()
 				css_map : { top : 25, left : 25, 'background-color' : '#8f8' },
 				name : name
 			});
+
+			sio.on( 'userupdate', completeLogin );
+
+			sio.emit( 'adduser', 
+			{
+				cid : stateMap.user.cid,
+				css_map : stateMap.user.css_map,
+				name : stateMap.user.name
+			});
 		};
 
 		logout = function ()
 		{
 			var
-				is_removed,
+				//is_removed,
 				user = stateMap.user;
+			
 			// When we add chat, we should leave the chatroom here
-
-			is_removed = removePerson( user );
+			chat._leave();
+			//is_removed = removePerson( user );
 			stateMap.user = stateMap.anon_user;
+			clearPeopleDb();
 
 			$.gevent.publish( 'spa-logout', [ user ] );
 
-			return is_removed;
+			//return is_removed;
 		};
 
 		return {
@@ -256,10 +273,295 @@ spa.model = (function ()
 	}());
 
 
-	initModule = function ()
+	// Chat object API
+	// ---------------------
+	// "chat" object can be used in spa.model.chat.
+	// "chat" object provides methods and events for managing chat messeaging.
+	// 
+	// Followings are included in public methods of "chat" object.
+	//  - join() : Join to the chat room. This routine establishes chat protocol 
+	//             to the backend which includes global custom events "spa-listchange" and "spa-updatechat".
+	//             If the current user is anonymous, then join() will be cancelled and returns false.
+	//  - get_chatee() : Returns the person object of person whom the user is chatting to.
+	//  				 If the user is not chatting to anybody, it returns null.
+	//  - set_chatee( <person_id> ) : Sets the user as a chat partner who is identified by "pserson_id".
+	//                                If the person ID is not in the user list, set 'null' as the chat partner.
+	//                                If the person specified is already the chat partner, it returns 'false'.
+	//                                Issues "spa-setchatee" global custom event.
+	//  - send_msg( <msg_text> ) : Send the message to the chat partner.
+	//                             Issues "spa-updatechat" global custom event.
+	//                             If the user is anonymous or the chat partner is null, 
+	//                             cancel the process and returns false.
+	//  - update_avatar( <update_avtr_map> ) : Sends "update_avtr_map" to the backend.
+	//                                         By this method, "spa-listchange" which includes updated user list 
+	//                                         and avatar information(css_map of person object) is issued.
+	//                                         "update_avtr_map" must be following format.
+	//                                         {
+	//                                           person_id : person_id,
+	//                                           css_map : css_map
+	//                                         }
+	// 
+	// Global custom events returned by this object are as follow.
+	//  - spa-setchatee : This event is issued, when the new chat partner is set.
+	//                    Following formatted map is provided as data.
+	//                    {
+	//                    	old_chatee : <old_chatee_person_object>,
+	//                    	new_chatee : <new_chatee_person_object>
+	//                    }
+	//  - spa-listchange : This event is issued when 
+	//  					> The list length of online user is changed.
+	//  					  (User joined to the chat room or leave.)
+	//  					> Contents is changed (The details of user's avator is changed).
+	//  - spa-updatechat : This event is issued, when new message was sent or received.
+	//  				   Following formatted map is provided as data.
+	//  				   {
+	//  				   	 dest_id : <chatee_id>,
+	//  				   	 dest_name : <chatee_name>,
+	//  				   	 sender_id : <sender_id>,
+	//  				   	 msg_text : <message_content>
+	//  				   }
+	//  				   
+	//  * The registrator to this event should get "people_db" from people model as update data.
+	//  
+	chat = (function ()
 	{
 		var
-			i, people_list, person_map;
+			_publish_listchange, _publish_updatechat,
+			_update_list, _leave_chat, 
+			
+			get_chatee, join_chat, send_msg, set_chatee, update_avatar,
+			
+			chatee = null;
+
+		// >>> Internal method start.
+		_update_list = function( arg_list )
+		{
+			var
+				i, person_map, make_person_map, person,
+				people_list = arg_list[ 0 ],
+				is_chatee_online = false;
+
+			clearPeopleDb();
+
+			PERSON:
+			for ( i = 0; i < people_list.length; i++ )
+			{
+				person_map = people_list[ i ];
+
+				if ( ! person_map.name )
+				{
+					continue PERSON;
+				}
+
+				// If it identifies the user, update css_map and skip others.
+				if ( stateMap.user && stateMap.user.id === person_map.id )
+				{
+					stateMap.user.css_map = person_map.css_map;
+					continue PERSON;
+				}
+
+				make_person_map = 
+				{
+					cid     : person_map._id,
+					css_map : person_map.css_map,
+					id      : person_map._id,
+					name    : person_map.name
+				};
+
+				person = makePerson( make_person_map );
+
+				if ( chatee && chatee.id === make_person_map.id )
+				{
+					is_chatee_online = true;
+					chatee = person;
+				}
+
+				makePerson( make_person_map );
+			}
+
+			stateMap.people_db.sort( 'name' );
+
+			// When the chat partner becomes offline, release the chat partner.
+			// As a result, "spa-setchatee" global event is issued.
+			if ( chatee && ! is_chatee_online )
+			{
+				set_chatee('');
+			}
+
+		};
+
+		_publish_listchange = function ( arg_list )
+		{
+			_update_list( arg_list );
+			$.gevent.publish( 'spa-listchange', [ arg_list ] );
+		};
+
+		_publish_updatechat = function ( arg_list )
+		{
+			var
+				msg_map = arg_list[ 0 ];
+
+			if ( ! chatee )
+			{
+				set_chatee( msg_map.sender_id );
+			}
+			else if ( msg_map.sender_id !== stateMap.user.id
+				      && 
+				      msg_map.sender_id !== chatee.id )
+			{
+				set_chatee( msg_map.sender_id );
+			}
+
+			$.gevent.publish( 'spa-updatechat', [ msg_map ] );
+
+		};
+		
+		_leave_chat = function ()
+		{
+			var 
+				sio = isFakeData ? spa.fake.mockSio : spa.data.getSio();
+			
+			chatee = null;
+			stateMap.is_connected = false;
+
+			if ( sio )
+			{
+				sio.emit( 'leavechat' );
+			}
+		};
+
+		// <<< Internal method END
+
+
+		get_chatee = function ()
+		{
+			return chatee;
+		};
+
+		join_chat = function ()
+		{
+			var
+				sio;
+
+			if ( stateMap.is_connected )
+			{
+				return false;
+			}
+
+			if ( stateMap.user.get_is_anon() )
+			{
+				console.warn( 'User must be defined before joining chat' );
+				return false;
+			}
+
+			sio = isFakeData ? spa.fake.mockSio : spa.data.getSio();
+			sio.on( 'listchange', _publish_listchange );
+			sio.on( 'updatechat', _publish_updatechat );
+			stateMap.is_connected = true;
+			
+			return true;
+		};
+
+		send_msg = function ( msg_text )
+		{
+			var
+				msg_map,
+				sio = isFakeData ? spa.fake.mockSio : spa.data.getSio();
+
+			if ( ! sio )
+			{
+				return false;
+			}
+
+			if ( ! ( stateMap.user && chatee ) )
+			{
+				return false;
+			}
+
+			msg_map = 
+			{
+				dest_id : chatee.id,
+				dest_name : chatee.name,
+				sender_id : stateMap.user.id,
+				msg_text : msg_text
+			};
+
+			// Because "updatechat" event is issued, now it is possible to send the message.
+			_publish_updatechat( [ msg_map ] );
+			sio.emit( 'updatechat', msg_map );
+			return true;
+		};
+
+		set_chatee = function ( person_id )
+		{
+			var
+				new_chatee;
+
+			new_chatee = stateMap.people_cid_map[ person_id ];
+
+			if ( new_chatee )
+			{
+				if ( chatee && chatee.id === new_chatee.id )
+				{
+					return false;
+				}
+			}
+			else
+			{
+				new_chatee = null;
+			}
+
+			$.gevent.publish( 'spa-setchatee', 
+				{
+					old_chatee : chatee,
+					new_chatee : new_chatee
+				});
+
+			chatee = new_chatee;
+
+			return true;
+		};
+
+		// "avatar_update_map" must be folowing format.
+		// 
+		// {
+		// 	  person_id : <string>, 
+		// 	  css_map : 
+		// 	  	{
+		// 	  		top : <init>
+		// 	  		left : <init>
+		// 	  		'background-color' : <string>
+		// 	  	}
+		// };
+		//
+		update_avatar = function ( avatar_update_map )
+		{
+			var
+				sio = isFakeData ? spa.fake.mockSio : spa.data.getSio();
+
+			if ( sio )
+			{
+				sio.emit( 'updateavatar', avatar_update_map );
+			}
+		};
+
+
+		return {
+			_leave        : _leave_chat,
+			get_chatee    : get_chatee,
+			join          : join_chat,
+			send_msg      : send_msg,
+			set_chatee    : set_chatee,
+			update_avatar : update_avatar
+		};
+
+	}());
+
+
+	initModule = function ()
+	{
+		//var
+		//	i, people_list, person_map;
 
 		// Initilize anonymous person
 		stateMap.anon_user = makePerson(
@@ -271,6 +573,7 @@ spa.model = (function ()
 
 		stateMap.user = stateMap.anon_user;
 
+		/*
 		if ( isFakeData )
 		{
 			people_list = spa.fake.getPeopleList();
@@ -287,6 +590,7 @@ spa.model = (function ()
 				});
 			}
 		}
+		*/
 	};
 
 	// Public Methods <<< End
@@ -296,7 +600,8 @@ spa.model = (function ()
 	// ### Return Public Methods ###
 	return {
 		initModule : initModule,
-		people : people
+		people     : people,
+		chat       : chat
 	};
 
 }());
