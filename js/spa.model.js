@@ -28,10 +28,10 @@ spa.model = (function ()
 			people_db : TAFFY(),
 			is_connected : false
 		},
-		isFakeData = true,
+		isFakeData = false,
 
 		personProto, makeCid, clearPeopleDb, completeLogin, 
-		makePerson, people, chat, //removePerson, 
+		makePerson, people, chat, removePerson, 
 		initModule;
 
 	// Module Scope Variant <<< End
@@ -124,9 +124,11 @@ spa.model = (function ()
 		stateMap.user.css_map = user_map.css_map;
 		stateMap.people_cid_map[ user_map._id ] = stateMap.user;
 
+		//Set callbacks for "listchange(_publish_listchange)", "updatechat(_publish_updatechat)" global envets.
 		chat.join();
 
-		// When we add chat, we shold join here
+		// When we add chat, we shold join here.
+		// spa.shell.onLogin changes the title of acctount.
 		$.gevent.publish( 'spa-login', [ stateMap.user ] );
 	};
 
@@ -162,7 +164,7 @@ spa.model = (function ()
 		return person;
 	};
 
-/*
+
 	removePerson = function ( person )
 	{
 		if ( ! person )
@@ -185,7 +187,7 @@ spa.model = (function ()
 
 		return true;
 	};
-*/
+
 
 	// Utility Methods <<< End
 	//===================================
@@ -354,7 +356,7 @@ spa.model = (function ()
 				}
 
 				// If it identifies the user, update css_map and skip others.
-				if ( stateMap.user && stateMap.user.id === person_map.id )
+				if ( stateMap.user && stateMap.user.id === person_map._id )
 				{
 					stateMap.user.css_map = person_map.css_map;
 					continue PERSON;
@@ -375,8 +377,6 @@ spa.model = (function ()
 					is_chatee_online = true;
 					chatee = person;
 				}
-
-				makePerson( make_person_map );
 			}
 
 			stateMap.people_db.sort( 'name' );

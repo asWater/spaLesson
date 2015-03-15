@@ -440,13 +440,21 @@ spa.shell = (function ()
 
 		// Configure & Initialize function module.
 		spa.chat.configModule(
-			{
-				set_chat_anchor : setChatAnchor,
-				chat_model : spa.model.chat,
-				people_model : spa.model.people
-			} );
+		{
+			set_chat_anchor : setChatAnchor,
+			chat_model : spa.model.chat,
+			people_model : spa.model.people
+		} );
 
 		spa.chat.initModule( jqueryMap.$container );
+
+		spa.avtr.configModule(
+		{
+			chat_model : spa.model.chat,
+			people_model : spa.model.people
+		});
+
+		spa.avtr.initModule( jqueryMap.$nav );
 
 		// Registration of Login/Logout event handler.
 		// - "jquery.event.gevent.js"

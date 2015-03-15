@@ -45,11 +45,10 @@ spa.chat.css
 	right: 0;
 	width: 2em;
 }
-
-.spa-chat-closer:hover
-{
-	background: #800;
-}
+	.spa-chat-closer:hover
+	{
+		background: #800;
+	}
 
 .spa-chat-head-toggle
 {

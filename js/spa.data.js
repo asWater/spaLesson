@@ -9,12 +9,22 @@ spa.data.js
 	regexp  : true, sloppy   : true,     vars : true,
 	white   : true
 */
-/*global $, spa */
+/*global $, io, spa */
 
 spa.data = (function ()
 {
+	'use strict';
+
 	//===================================
 	// Module Scope Variant >>> Start 
+
+	var
+		stateMap = 
+		{ 
+			sio : null 
+		},
+
+		makeSio, getSio, initModule;
 
 	// Module Scope Variant <<< End
 	//===================================
@@ -22,6 +32,26 @@ spa.data = (function ()
 
 	//===================================
 	// Utility Methods >>> Start
+
+	makeSio = function ()
+	{
+		var
+			socket = io.connect( '/chat' );
+
+		return {
+			emit : function ( event_name, data )
+			{
+				socket.emit( event_name, data );
+			},
+			on : function ( event_name, callback )
+			{
+				socket.on( event_name, function ()
+				{
+					callback( arguments );
+				});
+			}
+		};
+	};
 
 	// Utility Methods <<< End
 	//===================================
@@ -45,11 +75,24 @@ spa.data = (function ()
 	//===================================
 	// Public Methods >>> Start
 	
+	getSio = function ()
+	{
+		if ( ! stateMap.sio )
+		{
+			stateMap.sio = makeSio();
+		}
+	};
+
+	initModule = function (){};
+
 	// Public Methods <<< End
 	//===================================
 
 
 	// ### Return Public Methods ###
-	return {}; 
+	return {
+		getSio : getSio,
+		initModule : initModule
+	}; 
 
 }());
