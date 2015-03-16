@@ -17,6 +17,8 @@ white : true
 var
 	http = require( 'http' ),
 	express = require( 'express' ),
+	routes = require( './routes' ),
+	
 	app = express(),
 	server = http.createServer( app );
 
@@ -50,10 +52,8 @@ app.configure( 'production', function ()
 	app.use( express.errorHandler() );
 });
 
-app.get( '/', function (request, response )
-{
-	response.redirect( '/spa.html' );
-});
+
+routes.configRoutes( app, server );
 
 // Server Configuration <<< End
 //===================================
