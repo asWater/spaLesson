@@ -16,3 +16,5 @@ sftp-config.json
 #Unkown Type
 .DS_Store
 
+#Node packages
+node_modules/
