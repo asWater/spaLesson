@@ -26,7 +26,8 @@ spa.model = (function ()
 			cid_serial : 0,
 			people_cid_map : {},
 			people_db : TAFFY(),
-			is_connected : false
+			is_connected : false,
+			user : null
 		},
 		isFakeData = false,
 

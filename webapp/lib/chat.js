@@ -37,7 +37,7 @@ emitUserList = function ( io )
 	crud.read( 'user', { is_online : true }, {}, function ( result_list )
 	{
 		io
-			.of( 'chat' )
+			.of( '/chat' )
 			.emit( 'listchange', result_list );
 	});
 };
