@@ -56,8 +56,8 @@ spa.chat = (function ()
 				slider_close_time   : true,
 				slider_opened_em    : true,
 				slider_closed_em    : true,
-				slider_opened_title : 'Tap to close',
-				slider_closed_title : 'Tap to open',
+				slider_opened_title : true,
+				slider_closed_title : true,
 
 				chat_model          : true,
 				people_model        : true,
@@ -70,8 +70,8 @@ spa.chat = (function ()
 			slider_closed_em     : 2,
 			slider_opened_min_em : 10,
 			window_height_min_em : 20,
-			slider_opened_title  : 'Click to close',
-			slider_closed_title  : 'Click to open',
+			slider_opened_title  : 'Tap to close',
+			slider_closed_title  : 'Tap to open',
 
 			chat_model           : null,
 			people_model         : null,
@@ -537,8 +537,9 @@ spa.chat = (function ()
 		var
 			$list_box;
 
-		$append_target.append( configMap.main_html );
+		// load chat slider html and jquery cache
 		stateMap.$append_target = $append_target;
+		$append_target.append( configMap.main_html );
 		setJqueryMap();
 		setPxSizes();
 
@@ -561,7 +562,7 @@ spa.chat = (function ()
 		jqueryMap.$send.bind( 'utap', onSubmitMsg );
 		jqueryMap.$form.bind('submit', onSubmitMsg );
 
-		return true;
+		//return true;
 	};
 
 	// <Public Method>: "removeSlider".

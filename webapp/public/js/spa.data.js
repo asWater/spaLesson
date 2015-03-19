@@ -81,6 +81,7 @@ spa.data = (function ()
 		{
 			stateMap.sio = makeSio();
 		}
+		return stateMap.sio;
 	};
 
 	initModule = function (){};

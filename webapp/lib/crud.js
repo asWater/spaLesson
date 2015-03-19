@@ -232,7 +232,7 @@ destroyObj = function ( obj_type, find_map, callback )
 		});
 };
 
-module.export =
+module.exports =
 {
 	makeMongoId : mongodb.ObjectID,
 	checkType : checkType,
@@ -267,6 +267,7 @@ dbHandle.open( function ()
 		if ( objTypeMap.hasOwnProperty( schema_name ) )
 		{
 			// For Windows, it is necessary to change "/" to "\\".
+			//schema_path = __dirname + '\\' + schema_name + '.json';
 			schema_path = __dirname + '/' + schema_name + '.json';
 			loadSchema( schema_name, schema_path );
 		}
