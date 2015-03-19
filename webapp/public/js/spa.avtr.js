@@ -13,6 +13,8 @@ spa.avtr.js
 
 spa.avtr = (function ()
 {
+	'use strict';
+
 	//===================================
 	// Module Scope Variant >>> Start 
 
@@ -253,7 +255,7 @@ spa.avtr = (function ()
 
 			if ( person.id === chatee.id )
 			{
-				class_list.push( 'spa-x-is-user' );
+				class_list.push( 'spa-x-is-chatee' );
 			}
 
 			if ( person.get_is_user() )

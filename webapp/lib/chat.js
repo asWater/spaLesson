@@ -171,7 +171,7 @@ chatObj =
 		  	    		if ( chatterMap.hasOwnProperty( chat_map.dest_id ) )
 		  	    		{
 		  	    			chatterMap[ chat_map.dest_id ]
-		  	    				.emit( 'updatechat' );
+		  	    				.emit( 'updatechat', chat_map );
 		  	    		}
 		  	    		else
 		  	    		{
