@@ -129,6 +129,13 @@ chatObj =
 
 					      		delete user_map.cid;
 
+					      		// Duplicate user login should be not allowed.
+					      		if ( chatterMap[ result_list[ 0 ]._id ] )
+					      		{
+					      			console.log( '??? User is already logged in ???' );
+					      			return;
+					      		}
+
 					      		// use existing user with provided name.
 					      		if ( result_list.length > 0)
 					      		{

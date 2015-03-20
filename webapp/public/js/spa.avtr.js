@@ -330,7 +330,7 @@ spa.avtr = (function ()
 			.bind( 'utap', onTapNav )
 			.bind( 'uheldstart', onHeldstartNav )
 			.bind( 'uheldmove', onHeldmoveNav )
-			.bind( 'uheldned', onHeldendNav );
+			.bind( 'uheldend', onHeldendNav );
 
 		return true;
 	};
