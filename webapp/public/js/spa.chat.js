@@ -436,7 +436,8 @@ spa.chat = (function ()
 				+ 'No one is online'
 				+ '</div>';
 
-			clearChat();
+			// Commented out in order to avoid delete chat messages, when the user is alone.
+			//clearChat();
 		}
 
 		jqueryMap.$list_box.html( list_html );

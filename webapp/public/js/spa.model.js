@@ -31,6 +31,7 @@ spa.model = (function ()
 		},
 		isFakeData = false,
 
+		alertDupl,
 		personProto, makeCid, clearPeopleDb, completeLogin, 
 		makePerson, people, chat, removePerson, 
 		initModule;
@@ -112,6 +113,11 @@ spa.model = (function ()
 		}
 	};
 
+	alertDupl = function ()
+	{
+		alert('This user is already logged in!');
+		people.logout();
+	};
 
 	completeLogin = function ( user_list )
 	{
@@ -240,6 +246,7 @@ spa.model = (function ()
 			});
 
 			sio.on( 'userupdate', completeLogin );
+			sio.on( 'dupluser', alertDupl );
 
 			sio.emit( 'adduser', 
 			{

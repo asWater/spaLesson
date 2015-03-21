@@ -22,6 +22,7 @@ var
 	fsHandle = require( 'fs' ),
 	JSV      = require( 'JSV' ).JSV,
 	mongodb  = require( 'mongodb' ),
+	cache    = require( './cache' ),
 
 	mongoServer = new mongodb.Server(
 		'localhost',
@@ -71,7 +72,7 @@ clearIsOnline = function ()
 		{ is_online : false },
 		function ( response_map )
 		{
-			console.log( 'All users set to offline', response_map )
+			console.log( 'All users set to offline', response_map );
 		});
 };
 
@@ -144,22 +145,27 @@ readObj = function ( obj_type, find_map, fields_map, callback )
 		return;
 	}
 
-	dbHandle.collection(
-		obj_type,
-		function ( outer_error, collection )
-		{
-			collection.find( find_map, fields_map ).toArray(
-				function ( inner_error, map_list )
-				{
-					callback( map_list );
-				});
-		});
+//	cache.getValue( find_map, callback, function ()
+//	{
+		dbHandle.collection(
+			obj_type,
+			function ( outer_error, collection )
+			{
+				collection.find( find_map, fields_map ).toArray(
+					function ( inner_error, map_list )
+					{
+//						cache.setValue( find_map, map_list );
+						callback( map_list );
+					});
+			});
+//	});
+
 };
 
 updateObj = function ( obj_type, find_map, set_map, callback )
 {
 	var
-		type_check_map = checkType( obj_type )
+		type_check_map = checkType( obj_type );
 
 	if ( type_check_map )
 	{
@@ -203,13 +209,15 @@ updateObj = function ( obj_type, find_map, set_map, callback )
 destroyObj = function ( obj_type, find_map, callback )
 {
 	var
-		type_check_map = checkType( obj_type )
+		type_check_map = checkType( obj_type );
 
 	if ( type_check_map )
 	{
 		callback( type_check_map );
 		return;
 	}
+
+//	cache.deleteKey( find_map );
 
 	dbHandle.collection(
 		obj_type,

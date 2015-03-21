@@ -129,21 +129,24 @@ chatObj =
 
 					      		delete user_map.cid;
 
-					      		// Duplicate user login should be not allowed.
-					      		if ( chatterMap[ result_list[ 0 ]._id ] )
-					      		{
-					      			console.log( '??? User is already logged in ???' );
-					      			return;
-					      		}
-
-					      		// use existing user with provided name.
+					      		// User is in DB. 
 					      		if ( result_list.length > 0)
 					      		{
+						      		// Duplicate user login should not be allowed.
+						      		if ( chatterMap[ result_list[ 0 ]._id ] )
+						      		{
+						      			console.log( '??? User is already logged in ???' );
+						      			socket.emit( 'dupluser' );
+						      			return 'Error';
+						      		}
+						      		
+						      		// Use existing user with provided name.					      		
 					      			result_map = result_list[ 0 ];
 					      			result_map.cid = cid;
-					      			signIn( io, result_map, socket );
+					      			signIn( io, result_map, socket );						      			
+
 					      		}
-					      		// create the user with new name
+					      		// User is not in DB, create the user with new name
 					      		else
 					      		{
 					      			user_map.is_online = true;
