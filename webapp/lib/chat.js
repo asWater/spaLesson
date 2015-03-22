@@ -63,7 +63,7 @@ signIn = function ( io, user_map, socket )
 
 // "signOut"
 // Update is_online property and chatterMap.
-signOut = function ( io, user_id )
+signOut = function ( io, user_id, socket )
 {
 	crud.update(
 		'user',
@@ -75,6 +75,12 @@ signOut = function ( io, user_id )
 		});
 
 	delete chatterMap[ user_id ];
+
+	if ( io.sockets.sockets[ socket.id ] )
+	{
+		io.sockets.sockets[ socket.id ].disconnect();
+	}
+	
 };
 
 // Utility Method <<< End
@@ -198,13 +204,13 @@ chatObj =
 		  	    socket.on( 'leavechat', function ()
 		  	    	{
 		  	    		console.log( '** User %s logged out **', socket.user_id );
-		  	    		signOut( io, socket.user_id );
+		  	    		signOut( io, socket.user_id, socket );
 		  	    	} );
 
 		  	    socket.on( 'disconnect', function ()
 		  	    	{
 		  	    		console.log( '** User %s closed browser window or tab **', socket.user_id );
-		  	    		signOut( io, socket.user_id );
+		  	    		signOut( io, socket.user_id, socket );
 		  	    	} );
 
 		  	    // <Message handler> : "updateavatar"

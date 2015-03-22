@@ -481,9 +481,22 @@ spa.chat = (function ()
 
 	onLogout = function ( event, logout_user )
 	{
+		var
+			logout_reload;
+
 		configMap.set_chat_anchor( 'closed' );
 		jqueryMap.$title.text( 'Chat' );
 		clearChat();
+
+		logout_reload = setInterval( function () 
+		{
+			if ( stateMap.position_type === 'closed' )
+			{
+				location.reload();
+				clearInterval(logout_reload);
+			}
+		}, configMap.slider_close_time );
+
 	};
 
 	// Event Handlers <<< End
