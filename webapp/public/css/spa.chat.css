@@ -26,7 +26,7 @@ spa.chat.css
 	line-height: 1.8em;
 	border-bottom: thin solid #888;
 	cursor: pointer;
-	background: #888;
+	background: steelblue;
 	color: white;
 	font-family: verdana, arial, helvetica, sans-serif;
 	font-weight: 800;
@@ -138,9 +138,9 @@ spa.chat.css
 	overflow-y: auto;
 	border-width: thin 0 thin thin;
 	border-style: solid;
-	border-color: #888;
-	background-color: #888;
-	color: #ddd;
+	border-color: darkblue;
+	background-color: steelblue;
+	color: floralwhite;
 	border-radius: 0.5em 0 0 0;
 }
 
@@ -205,11 +205,12 @@ spa.chat.css
 	color: #fff;
 	font-weight: 800;
 	cursor: pointer;
+	background: darkblue;
 }
 	.spa-chat-msg-send:hover,
 	.spa-chat-msg-send.spa-x-select
 	{
-		background: #444;
+		background: dodgerblue;
 		color: #ff0;
 	}
 

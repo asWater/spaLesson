@@ -23,18 +23,23 @@ spa.shell.css
 	left: 8px;
 	height: 32px;
 	width: 128px;
-	background: orange;
+	padding: 3px;
+	background: mediumseagreen;
+	color: floralwhite;
+	border-radius: 3px;
 }
 
 	.spa-shell-head-logo h1
 	{
-		font : 800 22px/22px Verdana, Arial, Helvetica, sans-serif;
+		font : 600 16px/16px Verdana, Arial, Helvetica, sans-serif;
 		margin : 0;
+		margin-left: 2px;
 	}
 	.spa-shell-head-logo p
 	{
-		font: 800 10px/10px Verdana, Arial, Helvetica, sans-serif;
+		font: 600 8px/8px Verdana, Arial, Helvetica, sans-serif;
 		margin : 0;
+		margin-left: 2px;
 	}
 
 .spa-shell-head-acct
@@ -44,8 +49,8 @@ spa.shell.css
 	width: 210px;
 	height: 32px;
 	line-height: 32px;
-	background: #888;
-	color: #fff;
+	background: darkblue;
+	color: gold;
 	text-align: center;
 	cursor: pointer;
 	overflow: hidden;
